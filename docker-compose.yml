@@ -12,7 +12,18 @@ services:
     volumes:
       - "./autogpt:/app"
       - ".env:/app/.env"
+      - "./agent-workspace:/home/appuser/auto_gpt_workspace"
+      - "./prompts:/home/appuser/prompts"
     profiles: ["exclude-from-up"]
 
   redis:
     image: "redis/redis-stack-server:latest"
+    depends_on:
+      - redisinsight
+
+  redisinsight:
+    image: redislabs/redisinsight:latest
+    ports:
+      - '8001:8001'
+    volumes:
+      - "./redisinsight-db:/db"

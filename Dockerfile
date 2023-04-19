@@ -15,13 +15,20 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
     && apt-get update \
     && apt-get install -y chromium firefox-esr
 
+# Install sudo
+RUN apt-get update\
+    && apt-get install -y sudo nodejs npm
+
 # Set environment variables
 ENV PIP_NO_CACHE_DIR=yes \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
 
 # Create a non-root user and set permissions
-RUN useradd --create-home appuser
+RUN useradd --create-home appuser && \
+    mkdir -p /etc/sudoers.d && \
+    echo 'appuser ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/appuser && \
+    chmod 0440 /etc/sudoers.d/appuser
 WORKDIR /home/appuser
 RUN chown appuser:appuser /home/appuser
 USER appuser
